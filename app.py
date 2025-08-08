@@ -71,3 +71,7 @@ if ctx and ctx.video_transformer and hasattr(ctx.state, 'playing') and ctx.state
 else:
     position_placeholder.markdown("## Waiting for camera input...")
 
+image = st.camera_input("Take a picture")
+
+if image:
+    st.image(image)
