@@ -51,22 +51,19 @@ rtc_configuration = {
     ]
 }
 
-# Create the WebRTC streamer UI element in Streamlit
-ctx = webrtc_streamer(
-    key="pose-detection",
-    video_processor_factory=PoseDetector,
-    media_stream_constraints={"video": True, "audio": False},
-    rtc_configuration={
-        "iceServers": [
-            {"urls": ["stun:stun.l.google.com:19302"]},
-            {"urls": ["stun:stun1.l.google.com:19302"]},
-            {"urls": ["stun:stun2.l.google.com:19302"]},
-        ]
-    }
-)
+try:
+    ctx = webrtc_streamer(
+        key="pose-detection",
+        video_processor_factory=PoseDetector,
+        media_stream_constraints={"video": True, "audio": False},
+        rtc_configuration=rtc_configuration
+    )
+except Exception as e:
+    st.error(f"Error during WebRTC setup: {e}")
 
-# Continuously update the position text below the video
-if ctx and ctx.video_transformer and ctx.state.playing:
+
+# Correctly check for ctx.state
+if ctx and ctx.video_transformer and hasattr(ctx.state, 'playing') and ctx.state.playing:
     detected_position = ctx.video_transformer.detected_position
     position_placeholder.markdown(
         f"## Position: **{detected_position}**"
