@@ -42,20 +42,25 @@ class PoseDetector(VideoTransformerBase):
         cv2.putText(img, self.detected_position, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 3)
         
         return img
+rtc_configuration = {
+    "iceServers": [
+        {"urls": ["stun:stun.l.google.com:19302"]},
+        {"urls": ["stun:stun1.l.google.com:19302"]},
+        {"urls": ["stun:stun2.l.google.com:19302"]},
+        # You can also add additional STUN servers if needed
+    ]
+}
+try:
+    ctx = webrtc_streamer(
+        key="pose-detection",
+        video_processor_factory=PoseDetector,
+        media_stream_constraints={"video": True, "audio": False},
+        rtc_configuration=rtc_configuration
+    )
+except Exception as e:
+    st.error(f"Error during WebRTC setup: {e}")
 
-# Create the WebRTC streamer UI element in Streamlit
-ctx = webrtc_streamer(
-    key="pose-detection",
-    video_processor_factory=PoseDetector,
-    media_stream_constraints={"video": True, "audio": False},
-    rtc_configuration={
-        "iceServers": [
-            {"urls": ["stun:stun.l.google.com:19302"]},
-            {"urls": ["stun:stun1.l.google.com:19302"]},
-            {"urls": ["stun:stun2.l.google.com:19302"]},
-        ]
-    }
-)
+
 
 # Continuously update the position text below the video
 if ctx and ctx.video_transformer and ctx.state.playing:
