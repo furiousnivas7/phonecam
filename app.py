@@ -49,21 +49,20 @@ ctx = webrtc_streamer(
     video_processor_factory=PoseDetector,
     media_stream_constraints={"video": True, "audio": False},
     rtc_configuration={
-    "iceServers": [
-        {"urls": ["stun:stun.l.google.com:19302"]},
-        {"urls": ["stun:stun1.l.google.com:19302"]},
-        {"urls": ["stun:stun2.l.google.com:19302"]},
-        # Or add other publicly available STUN servers if necessary
-    ]
-}
-,
+        "iceServers": [
+            {"urls": ["stun:stun.l.google.com:19302"]},
+            {"urls": ["stun:stun1.l.google.com:19302"]},
+            {"urls": ["stun:stun2.l.google.com:19302"]},
+        ]
+    }
 )
 
 # Continuously update the position text below the video
-# ✅ ADD ctx.state.playing TO THE CONDITION
-if ctx.state.playing and ctx.video_transformer:
+if ctx and ctx.video_transformer and ctx.state.playing:
     detected_position = ctx.video_transformer.detected_position
     position_placeholder.markdown(
         f"## Position: **{detected_position}**"
     )
+else:
+    position_placeholder.markdown("## Waiting for camera input...")
 
