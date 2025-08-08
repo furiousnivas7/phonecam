@@ -49,8 +49,14 @@ ctx = webrtc_streamer(
     video_processor_factory=PoseDetector,
     media_stream_constraints={"video": True, "audio": False},
     rtc_configuration={
-        "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
-    },
+    "iceServers": [
+        {"urls": ["stun:stun.l.google.com:19302"]},
+        {"urls": ["stun:stun1.l.google.com:19302"]},
+        {"urls": ["stun:stun2.l.google.com:19302"]},
+        # Or add other publicly available STUN servers if necessary
+    ]
+}
+,
 )
 
 # Continuously update the position text below the video
