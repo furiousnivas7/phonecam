@@ -54,9 +54,10 @@ ctx = webrtc_streamer(
 )
 
 # Continuously update the position text below the video
-if ctx.video_transformer:
+# ✅ ADD ctx.state.playing TO THE CONDITION
+if ctx.state.playing and ctx.video_transformer:
     detected_position = ctx.video_transformer.detected_position
     position_placeholder.markdown(
-        f"## Position: **{detected_position}**",
-        unsafe_allow_html=True  # ✅ valid here
+        f"## Position: **{detected_position}**"
     )
+
