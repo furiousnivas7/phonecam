@@ -14,7 +14,6 @@ position_placeholder = st.empty()
 # The main class that handles the AI processing for each frame
 class PoseDetector(VideoTransformerBase):
     def __init__(self):
-        # Remove output_tensor_range argument, and just use the default configuration
         self.pose = mp.solutions.pose.Pose(
             min_detection_confidence=0.5, 
             min_tracking_confidence=0.5
@@ -42,15 +41,18 @@ class PoseDetector(VideoTransformerBase):
         cv2.putText(img, self.detected_position, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 3)
         
         return img
+
+# Define rtc_configuration with multiple STUN servers
 rtc_configuration = {
     "iceServers": [
         {"urls": ["stun:stun.l.google.com:19302"]},
         {"urls": ["stun:stun1.l.google.com:19302"]},
         {"urls": ["stun:stun2.l.google.com:19302"]},
-        # You can also add additional STUN servers if needed
+        # You can add more servers if needed
     ]
 }
 
+# Try WebRTC and catch any errors
 try:
     ctx = webrtc_streamer(
         key="pose-detection",
@@ -59,10 +61,9 @@ try:
         rtc_configuration=rtc_configuration
     )
 except Exception as e:
-    st.error(f"Error during WebRTC setup: {e}")
+    st.error(f"WebRTC error: {e}")
 
-
-# Correctly check for ctx.state
+# Continuously update the position text below the video
 if ctx and ctx.video_transformer and hasattr(ctx.state, 'playing') and ctx.state.playing:
     detected_position = ctx.video_transformer.detected_position
     position_placeholder.markdown(
@@ -70,4 +71,3 @@ if ctx and ctx.video_transformer and hasattr(ctx.state, 'playing') and ctx.state
     )
 else:
     position_placeholder.markdown("## Waiting for camera input...")
-
